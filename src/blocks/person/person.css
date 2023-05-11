@@ -1,0 +1,22 @@
+.person {
+    max-width: 880px;
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    
+    padding-top: 40px;
+}
+
+@media (max-width: 768px) {
+    .person {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 320px) {
+    .person {
+        max-width: 282px;
+    }
+}

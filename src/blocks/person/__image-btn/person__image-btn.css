@@ -1,0 +1,37 @@
+.person__image-btn {
+    background: none;
+    border: none;
+    max-width: 120px;
+    width: 100%;
+    height: 120px;
+    position: relative;
+    border-radius: 50%;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+}
+
+.person__image-btn:hover::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, .6); 
+ }
+    
+.person__image-btn:hover::after {
+    background-image: url('../../../images/avatar-icon.svg');
+    background-color: default;
+    content: '';
+    width: 26px;
+    height: 26px;
+    left: 40%;
+    top: 40%;
+    display: block;
+    background-size:cover;
+    position: absolute;
+}
+
+
+
+

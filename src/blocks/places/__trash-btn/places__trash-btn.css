@@ -1,0 +1,13 @@
+.places__trash-btn {
+    border: none;
+    background: url(../../../images/trash-btn.svg);
+    width: 18px;
+    height: 19px;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    cursor: pointer;
+}

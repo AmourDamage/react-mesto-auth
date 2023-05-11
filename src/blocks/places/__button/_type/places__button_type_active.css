@@ -1,0 +1,12 @@
+.places__button_type_active {
+    border: none;
+    background: url(../../../../images/heart-type-black.svg);
+    width: 22px;
+    height: 19px;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.places__button_type_active:hover {
+    opacity: inherit;
+}

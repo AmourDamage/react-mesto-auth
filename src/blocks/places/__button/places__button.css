@@ -1,0 +1,17 @@
+.places__button {
+    border: none;
+    cursor: pointer;
+    transition: opacity .1s ease-in;
+    width: 22px;
+    height: 19px;
+    background: url(../../../images/heart.svg);
+    background-position: center;
+    background-repeat: no-repeat;
+
+    align-self: center;
+}
+
+
+.places__button:hover {
+  opacity: 0.5;
+}

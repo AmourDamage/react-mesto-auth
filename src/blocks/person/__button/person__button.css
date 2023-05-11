@@ -1,0 +1,16 @@
+.person__button {
+    padding: 11px;
+    margin: 3px 0px 0px 0px;
+    background: url(../../../images/profile-btn.svg);
+    background-position: center;
+    background-repeat: no-repeat;
+    margin-right: 16px;
+    border: 1px solid #FFFFFF;
+}
+
+@media (max-width: 320px) {
+    .person__button {
+      padding: 8px;
+      background-size: 7.5px 7.5px;
+    }
+}
