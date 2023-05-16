@@ -2,7 +2,6 @@ import React from 'react';
 
 import Header from './Header';
 import Main from './Main';
-import Footer from './Footer';
 import PopupWithForm from './PopupWithForm';
 import ImagePopup from './ImagePopup';
 import Api from '../utils/Api';
@@ -10,16 +9,34 @@ import { CurrentUserContext } from '../contexts/CurrentUserContext';
 import EditProfilePopup from './EditProfilePopup';
 import EditAvatarPopup from './EditAvatarPopup';
 import AddPlacePopup from './AddPlacePopup';
+import SucsessfullRegistrationPopup from './SucsessfullRegistrationPopup';
+
+import Login from './Login';
+import Register from './Register';
+import ProtectedRouteElement from './ProtectedRouteElement';
+
+import * as checkToken from '../utils/Auth';
+
+import { Routes, Route, useNavigate } from 'react-router-dom';
 
 function App() {
   const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = React.useState(false);
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = React.useState(false);
   const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = React.useState(false);
+  const [isSucsessfullPopupOpen, SetIsSucsessfullPopupOpen] = React.useState(false);
+  const [isSucsessfull, setIsSucsessfull] = React.useState(false);
+
   const [selectedCard, setSelectedCard] = React.useState(null);
 
   const [cards, setCards] = React.useState([]);
 
   const [currentUser, setCurrentUser] = React.useState({});
+
+  const [loggedIn, setIsLoggedIn] = React.useState(false);
+
+  const [userData, setUserData] = React.useState('');
+
+  const Navigate = useNavigate();
 
   React.useEffect(() => {
     Api.getUserInfo()
@@ -36,6 +53,26 @@ function App() {
       .catch((err) => {
         console.log(err);
       });
+  }, []);
+
+  function tokenCheck() {
+    if (localStorage.getItem('token')) {
+      const jwt = localStorage.getItem('token');
+
+      if (jwt) {
+        checkToken.checkToken(jwt).then((res) => {
+          if (res) {
+            setIsLoggedIn(true);
+            setUserData(res.data.email);
+            Navigate('/');
+          }
+        });
+      }
+    }
+  }
+
+  React.useEffect(() => {
+    tokenCheck();
   }, []);
 
   function handleCardLike(card) {
@@ -74,6 +111,7 @@ function App() {
     setIsEditAvatarPopupOpen(false);
     setIsEditProfilePopupOpen(false);
     setIsAddPlacePopupOpen(false);
+    SetIsSucsessfullPopupOpen(false);
     setSelectedCard(null);
   }
 
@@ -122,19 +160,66 @@ function App() {
       });
   }
 
+  function handleLogin() {
+    setIsLoggedIn(true);
+  }
+
+  function handleSucsessPopupOpen(isTrue) {
+    SetIsSucsessfullPopupOpen(isTrue);
+  }
+
+  function handleSucsessOfPopup(isSucsessfull) {
+    setIsSucsessfull(isSucsessfull);
+  }
+
   return (
     <>
       <CurrentUserContext.Provider value={currentUser}>
-        <Header></Header>
-        <Main
-          onEditAvatar={handleEditAvatarClick}
-          onEditProfile={handleEditProfileClick}
-          onAddPlace={handleAddPlaceClick}
-          onCardClick={setSelectedCard}
-          onCardLike={handleCardLike}
-          onCardDelete={handleCardDelete}
-          cards={cards}></Main>
-        <Footer></Footer>
+        <Header userData={userData}></Header>
+        <Routes>
+          <Route
+            path={'*'}
+            element={
+              <Login
+                handleLogin={handleLogin}
+                name="login"
+                title="Вход"
+                buttonText="Войти"
+                isOpen={handleSucsessPopupOpen}
+                isSucsessfull={handleSucsessOfPopup}
+              />
+            }></Route>
+          <Route
+            path="/sign-up"
+            element={
+              <Register
+                name="register"
+                title="Зарегистрироваться"
+                buttonText="Зарегистрироваться"
+                isOpen={handleSucsessPopupOpen}
+                isSucsessfull={handleSucsessOfPopup}
+              />
+            }></Route>
+          <Route
+            path="/"
+            element={
+              <ProtectedRouteElement
+                element={Main}
+                onEditAvatar={handleEditAvatarClick}
+                onEditProfile={handleEditProfileClick}
+                onAddPlace={handleAddPlaceClick}
+                onCardClick={setSelectedCard}
+                onCardLike={handleCardLike}
+                onCardDelete={handleCardDelete}
+                cards={cards}
+                loggedIn={loggedIn}
+              />
+            }></Route>
+          <Route
+            path="/"
+            element={loggedIn ? <Navigate to="/" /> : <Navigate to="/sign-in" />}></Route>
+        </Routes>
+
         <EditAvatarPopup
           isOpen={isEditAvatarPopupOpen}
           onClose={closeAllPopups}
@@ -148,6 +233,11 @@ function App() {
           onClose={closeAllPopups}
           onAddPlace={handleAddPlaceSubmit}></AddPlacePopup>
         <PopupWithForm name="confirm" title="Вы уверены?" buttonText="Да"></PopupWithForm>
+        <SucsessfullRegistrationPopup
+          isOpen={isSucsessfullPopupOpen}
+          isSucsessful={isSucsessfull}
+          name="sucsessfull"
+          onClose={closeAllPopups}></SucsessfullRegistrationPopup>
         <ImagePopup card={selectedCard} onClose={closeAllPopups}></ImagePopup>
       </CurrentUserContext.Provider>
     </>

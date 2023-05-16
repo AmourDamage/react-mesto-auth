@@ -2,15 +2,10 @@
     max-width: 880px;
     padding: 45px 0 41px 0px;
     border-bottom: 1px solid rgb(84, 84, 84, 0.7);
-    
-    
-
+    display: flex;
+    justify-content: space-between;
     box-sizing: border-box;
     margin: 0 auto;
-
-
-   
-    
 }
 
 @media (max-width: 768px) {
