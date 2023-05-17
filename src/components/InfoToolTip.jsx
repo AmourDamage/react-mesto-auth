@@ -3,7 +3,7 @@ import React from 'react';
 import sucsessImg from '../images/sucsess.svg';
 import notSucsessImg from '../images/notsucsess.svg';
 
-function SucsessfullRegistrationPopup({ name, onClose, isSucsessful, isOpen }) {
+function InfoToolTip({ name, onClose, isSucsessful, isOpen }) {
   return (
     <div className={`popup popup_type_${name} ${isOpen ? 'popup_opened' : ''}`}>
       <div className="popup__container">
@@ -23,4 +23,4 @@ function SucsessfullRegistrationPopup({ name, onClose, isSucsessful, isOpen }) {
   );
 }
 
-export default SucsessfullRegistrationPopup;
+export default InfoToolTip;

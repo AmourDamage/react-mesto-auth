@@ -9,7 +9,7 @@ import { CurrentUserContext } from '../contexts/CurrentUserContext';
 import EditProfilePopup from './EditProfilePopup';
 import EditAvatarPopup from './EditAvatarPopup';
 import AddPlacePopup from './AddPlacePopup';
-import SucsessfullRegistrationPopup from './SucsessfullRegistrationPopup';
+import InfoToolTip from './InfoToolTip';
 
 import Login from './Login';
 import Register from './Register';
@@ -20,10 +20,12 @@ import * as checkToken from '../utils/Auth';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 
 function App() {
+  const [isLoading, setIsLoading] = React.useState(false);
+
   const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = React.useState(false);
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = React.useState(false);
   const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = React.useState(false);
-  const [isSucsessfullPopupOpen, SetIsSucsessfullPopupOpen] = React.useState(false);
+  const [isSucsessfullPopupOpen, setIsSucsessfullPopupOpen] = React.useState(false);
   const [isSucsessfull, setIsSucsessfull] = React.useState(false);
 
   const [selectedCard, setSelectedCard] = React.useState(null);
@@ -36,7 +38,7 @@ function App() {
 
   const [userData, setUserData] = React.useState('');
 
-  const Navigate = useNavigate();
+  const navigate = useNavigate();
 
   React.useEffect(() => {
     Api.getUserInfo()
@@ -60,13 +62,18 @@ function App() {
       const jwt = localStorage.getItem('token');
 
       if (jwt) {
-        checkToken.checkToken(jwt).then((res) => {
-          if (res) {
-            setIsLoggedIn(true);
-            setUserData(res.data.email);
-            Navigate('/');
-          }
-        });
+        checkToken
+          .checkToken(jwt)
+          .then((res) => {
+            if (res) {
+              setIsLoggedIn(true);
+              setUserData(res.data.email);
+              navigate('/');
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
       }
     }
   }
@@ -111,7 +118,7 @@ function App() {
     setIsEditAvatarPopupOpen(false);
     setIsEditProfilePopupOpen(false);
     setIsAddPlacePopupOpen(false);
-    SetIsSucsessfullPopupOpen(false);
+    setIsSucsessfullPopupOpen(false);
     setSelectedCard(null);
   }
 
@@ -128,6 +135,7 @@ function App() {
   }
 
   function handleUpdateUser({ name, about }) {
+    setIsLoading(true);
     Api.saveUserInfo({ name, about })
       .then((userInfo) => {
         setCurrentUser(userInfo);
@@ -135,10 +143,14 @@ function App() {
       })
       .catch((err) => {
         console.log(err);
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
   }
 
   function handleUpdateAvatar({ link }) {
+    setIsLoading(true);
     Api.changeAvatar({ link })
       .then((avatar) => {
         setCurrentUser(avatar);
@@ -146,10 +158,14 @@ function App() {
       })
       .catch((err) => {
         console.log(err);
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
   }
 
   function handleAddPlaceSubmit({ name, link }) {
+    setIsLoading(true);
     Api.addCard({ name, link })
       .then((newCard) => {
         setCards([newCard, ...cards]);
@@ -157,6 +173,9 @@ function App() {
       })
       .catch((err) => {
         console.log(err);
+      })
+      .finally(() => {
+        setIsLoading(true);
       });
   }
 
@@ -165,7 +184,7 @@ function App() {
   }
 
   function handleSucsessPopupOpen(isTrue) {
-    SetIsSucsessfullPopupOpen(isTrue);
+    setIsSucsessfullPopupOpen(isTrue);
   }
 
   function handleSucsessOfPopup(isSucsessfull) {
@@ -173,74 +192,76 @@ function App() {
   }
 
   return (
-    <>
-      <CurrentUserContext.Provider value={currentUser}>
-        <Header userData={userData}></Header>
-        <Routes>
-          <Route
-            path={'*'}
-            element={
-              <Login
-                handleLogin={handleLogin}
-                name="login"
-                title="Вход"
-                buttonText="Войти"
-                isOpen={handleSucsessPopupOpen}
-                isSucsessfull={handleSucsessOfPopup}
-              />
-            }></Route>
-          <Route
-            path="/sign-up"
-            element={
-              <Register
-                name="register"
-                title="Зарегистрироваться"
-                buttonText="Зарегистрироваться"
-                isOpen={handleSucsessPopupOpen}
-                isSucsessfull={handleSucsessOfPopup}
-              />
-            }></Route>
-          <Route
-            path="/"
-            element={
-              <ProtectedRouteElement
-                element={Main}
-                onEditAvatar={handleEditAvatarClick}
-                onEditProfile={handleEditProfileClick}
-                onAddPlace={handleAddPlaceClick}
-                onCardClick={setSelectedCard}
-                onCardLike={handleCardLike}
-                onCardDelete={handleCardDelete}
-                cards={cards}
-                loggedIn={loggedIn}
-              />
-            }></Route>
-          <Route
-            path="/"
-            element={loggedIn ? <Navigate to="/" /> : <Navigate to="/sign-in" />}></Route>
-        </Routes>
+    <CurrentUserContext.Provider value={currentUser}>
+      <Header userData={userData}></Header>
+      <Routes>
+        <Route
+          path={'*'}
+          element={
+            <Login
+              handleLogin={handleLogin}
+              setUserData={setUserData}
+              name="login"
+              title="Вход"
+              buttonText="Войти"
+              isOpen={handleSucsessPopupOpen}
+              isSucsessfull={handleSucsessOfPopup}
+            />
+          }></Route>
+        <Route
+          path="/sign-up"
+          element={
+            <Register
+              name="register"
+              title="Зарегистрироваться"
+              buttonText="Зарегистрироваться"
+              isOpen={handleSucsessPopupOpen}
+              isSucsessfull={handleSucsessOfPopup}
+            />
+          }></Route>
+        <Route
+          path="/"
+          element={
+            <ProtectedRouteElement
+              element={Main}
+              onEditAvatar={handleEditAvatarClick}
+              onEditProfile={handleEditProfileClick}
+              onAddPlace={handleAddPlaceClick}
+              onCardClick={setSelectedCard}
+              onCardLike={handleCardLike}
+              onCardDelete={handleCardDelete}
+              cards={cards}
+              loggedIn={loggedIn}
+            />
+          }></Route>
+        <Route
+          path="/"
+          element={loggedIn ? <navigate to="/" /> : <navigate to="/sign-in" />}></Route>
+      </Routes>
 
-        <EditAvatarPopup
-          isOpen={isEditAvatarPopupOpen}
-          onClose={closeAllPopups}
-          onUpdateAvatar={handleUpdateAvatar}></EditAvatarPopup>
-        <EditProfilePopup
-          isOpen={isEditProfilePopupOpen}
-          onClose={closeAllPopups}
-          onUpdateUser={handleUpdateUser}></EditProfilePopup>
-        <AddPlacePopup
-          isOpen={isAddPlacePopupOpen}
-          onClose={closeAllPopups}
-          onAddPlace={handleAddPlaceSubmit}></AddPlacePopup>
-        <PopupWithForm name="confirm" title="Вы уверены?" buttonText="Да"></PopupWithForm>
-        <SucsessfullRegistrationPopup
-          isOpen={isSucsessfullPopupOpen}
-          isSucsessful={isSucsessfull}
-          name="sucsessfull"
-          onClose={closeAllPopups}></SucsessfullRegistrationPopup>
-        <ImagePopup card={selectedCard} onClose={closeAllPopups}></ImagePopup>
-      </CurrentUserContext.Provider>
-    </>
+      <EditAvatarPopup
+        isOpen={isEditAvatarPopupOpen}
+        buttonText={isLoading ? 'Сохранение...' : 'Сохранить'}
+        onClose={closeAllPopups}
+        onUpdateAvatar={handleUpdateAvatar}></EditAvatarPopup>
+      <EditProfilePopup
+        isOpen={isEditProfilePopupOpen}
+        buttonText={isLoading ? 'Сохранение...' : 'Сохранить'}
+        onClose={closeAllPopups}
+        onUpdateUser={handleUpdateUser}></EditProfilePopup>
+      <AddPlacePopup
+        isOpen={isAddPlacePopupOpen}
+        buttonText={isLoading ? 'Сохранение...' : 'Сохранить'}
+        onClose={closeAllPopups}
+        onAddPlace={handleAddPlaceSubmit}></AddPlacePopup>
+      <PopupWithForm name="confirm" title="Вы уверены?" buttonText="Да"></PopupWithForm>
+      <InfoToolTip
+        isOpen={isSucsessfullPopupOpen}
+        isSucsessful={isSucsessfull}
+        name="sucsessfull"
+        onClose={closeAllPopups}></InfoToolTip>
+      <ImagePopup card={selectedCard} onClose={closeAllPopups} />
+    </CurrentUserContext.Provider>
   );
 }
 

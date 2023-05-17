@@ -19,7 +19,7 @@ function Main({
         <section className="person">
           <div className="person__container">
             <button className="person__image-btn" onClick={onEditAvatar}>
-              <img src={currentUser.avatar} alt="Жак-Ив Кусто" className="person__image" />
+              <img src={currentUser.avatar} alt={currentUser.name} className="person__image" />
             </button>
             <div className="person__wrap">
               <div className="person__info">

@@ -1,17 +1,14 @@
 import React from 'react';
-import { CurrentUserContext } from '../contexts/CurrentUserContext';
 import PopupWithForm from './PopupWithForm';
 
 function AddPlacePopup(props) {
   const [name, setName] = React.useState('');
   const [link, setLink] = React.useState('');
 
-  const currentUser = React.useContext(CurrentUserContext);
-
   React.useEffect(() => {
-    setName(currentUser.name);
-    setLink(currentUser.link);
-  }, [currentUser]);
+    setName('');
+    setLink('');
+  }, [props.isOpen]);
 
   function handleInputNameChange(e) {
     setName(e.target.value);
@@ -35,7 +32,7 @@ function AddPlacePopup(props) {
       title="Добавить новое место"
       isOpen={props.isOpen}
       onClose={props.onClose}
-      buttonText="Добавить"
+      buttonText={props.buttonText}
       onSubmit={handleSubmit}>
       <input
         id="input-place"
@@ -47,6 +44,7 @@ function AddPlacePopup(props) {
         maxLength={30}
         name="name"
         onChange={handleInputNameChange}
+        value={name}
       />
       <span id="input-place-error" className="popup__input-error" />
       <input
@@ -57,6 +55,7 @@ function AddPlacePopup(props) {
         required=""
         name="link"
         onChange={handleInputLinkChange}
+        value={link}
       />
       <span id="input-link-error" className="popup__input-error" />
     </PopupWithForm>

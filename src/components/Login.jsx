@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 import * as login from '../utils/Auth';
 
-function Login({ title, name, buttonText, handleLogin, isOpen, isSucsessfull }) {
+function Login({ title, name, buttonText, handleLogin, isOpen, isSucsessfull, setUserData }) {
   const navigate = useNavigate();
   const [formValue, setFormValue] = React.useState({
     username: '',
@@ -30,6 +30,7 @@ function Login({ title, name, buttonText, handleLogin, isOpen, isSucsessfull }) 
           setFormValue({ username: '', password: '' });
           handleLogin();
           navigate('/');
+          setUserData(formValue.username);
         }
       })
       .catch((err) => {

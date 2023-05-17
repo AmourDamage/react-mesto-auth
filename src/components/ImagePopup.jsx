@@ -1,6 +1,8 @@
 import React from 'react';
+import { usePopupClose } from '../hooks/usePopupClose';
 
 function ImagePopup({ card, onClose }) {
+  usePopupClose(card, onClose);
   return (
     <div className={`popup popup-preview ${card ? 'popup_opened' : ''}`}>
       <figure className="popup__container popup-picture">

@@ -27,15 +27,16 @@ function Register({ title, name, buttonText, isOpen, isSucsessfull }) {
 
     register
       .register(email, password)
-      .then((res) => {
-        isOpen(true);
+      .then(() => {
         isSucsessfull(true);
         navigate('/sign-in');
       })
       .catch((err) => {
-        isOpen(true);
         isSucsessfull(false);
         console.log(err);
+      })
+      .finally(() => {
+        isOpen(true);
       });
   }
   return (
@@ -67,7 +68,7 @@ function Register({ title, name, buttonText, isOpen, isSucsessfull }) {
         </button>
       </form>
 
-      <Link className="auth__link" href="!">
+      <Link className="auth__link" to="/sign-in">
         Уже зарегистрированы ? Войти
       </Link>
     </div>
